@@ -53,15 +53,15 @@ function App() {
 
                     <Typography variant="h6" className={classes.title}>PMS</Typography>
 
-                    <Button color="inherit" onClick={handleClickOpen}>Login</Button>
+                    <Button color="inherit" onClick={handleClickOpen}>{login ? name : "Login"}</Button>
                     <LoginDialog open={open} onClose={handleClose} />
                 </Toolbar>
             </AppBar>
             <div className={classes.offset} />
-            <Grid container alignItems="center" justify="center" direction="column" maxWidth="xl">
+            <Container maxWidth="xl">
                 <Button variant ="contained" color="primary" onClick={handleLogin}>Test Login Event</Button>
                 {login ? <Allowed /> : <Denied />}
-            </Grid>
+            </Container>
         </React.Fragment>
     );
 }
@@ -69,8 +69,8 @@ function App() {
 const Denied = () => {
     return (
         <ThemeProvider theme={theme}>
-            <Typography variant="h1" align="center">Access Denied</Typography>
-            <Typography variant="h3" align="center">You need to be logged in to use this application.</Typography>
+            <Typography variant="h1">Access Denied</Typography>
+            <Typography variant="h3">You need to be logged in to use this application.</Typography>
         </ThemeProvider>
     )
 }
@@ -78,7 +78,7 @@ const Denied = () => {
 const Allowed = () => {
     return (
         <ThemeProvider theme={theme}>
-            <Typography variant="h1" align="center">Hello {name}</Typography>
+            <Typography variant="h1">Welcome, {name}!</Typography>
         </ThemeProvider>
     )
 }
