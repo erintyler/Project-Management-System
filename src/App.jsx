@@ -4,7 +4,7 @@ import {AppBar, Toolbar, Button, IconButton, Typography, Container, Grid} from '
 import {makeStyles, createMuiTheme, responsiveFontSizes, ThemeProvider} from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 
-import LoginDialog from './LoginDialog';
+import LoginDialog from './Components/LoginDialog';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 let theme = createMuiTheme();
 theme = responsiveFontSizes(theme);
 
-let name = "Erin";
+let name = "Alice";
 
 function App() {
     const [open, setOpen] = React.useState(false);

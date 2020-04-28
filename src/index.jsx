@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import 'typeface-roboto'
 
 import App from './App';
-import LoginDialog from './LoginDialog';
 
 import * as serviceWorker from './serviceWorker';
 
