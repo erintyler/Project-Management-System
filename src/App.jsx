@@ -1,7 +1,9 @@
 import React from 'react';
 
-import {AppBar, Toolbar, Button, IconButton, Typography, Container, Grid} from '@material-ui/core/';
+import {AppBar, Toolbar, Button, IconButton, Typography, Container, Grid, Snackbar} from '@material-ui/core/';
 import {makeStyles, createMuiTheme, responsiveFontSizes, ThemeProvider} from '@material-ui/core/styles';
+import MuiAlert from '@material-ui/lab/Alert';
+
 import MenuIcon from '@material-ui/icons/Menu';
 
 import LoginDialog from './Components/LoginDialog';
@@ -19,26 +21,35 @@ const useStyles = makeStyles((theme) => ({
 let theme = createMuiTheme();
 theme = responsiveFontSizes(theme);
 
-let name = "Alice";
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 function App() {
     const [open, setOpen] = React.useState(false);
     const [login, setLogin] = React.useState(false);
+    const [loginSnack, setLoginSnack] = React.useState(false); 
+
+    const [name, setName] = React.useState("");
+    const [email, setEmail] = React.useState("");
 
     const handleClickOpen = () => {
         setOpen(true);
     }
 
-    const handleLogin = () => {
-        if(login) {
-            setLogin(false);
-        } else {
+    const handleClose = (value) => {
+        setOpen(false);
+
+        if(typeof value !== 'undefined'){
+            setName(`${value.firstName} ${value.lastName}`);
+            setEmail(`${value.email}`);
             setLogin(true);
+            setLoginSnack(true);
         }
     }
 
-    const handleClose = () => {
-        setOpen(false);
+    const handleLoginClose = () => {
+        setLoginSnack(false);
     }
 
     const classes = useStyles();
@@ -59,14 +70,17 @@ function App() {
             </AppBar>
             <div className={classes.offset} />
             <Container maxWidth="xl">
-                <Button variant ="contained" color="primary" onClick={handleLogin}>Test Login Event</Button>
-                {login ? <Allowed /> : <Denied />}
+                {login ? <LoggedIn name={name} email={email}/> : <LoggedOut />}
             </Container>
+
+            <Snackbar open={loginSnack} anchorOrigin={{vertical: 'bottom', horizontal: 'center'}} autoHideDuration={6000} onClose={handleLoginClose}>
+                <Alert onClose={handleLoginClose} severity="success">Logged In!</Alert>
+            </Snackbar>
         </React.Fragment>
     );
 }
 
-const Denied = () => {
+const LoggedOut = () => {
     return (
         <ThemeProvider theme={theme}>
             <Typography variant="h1">Access Denied</Typography>
@@ -75,11 +89,24 @@ const Denied = () => {
     )
 }
 
-const Allowed = () => {
+const LoggedIn = (props) => {
     return (
-        <ThemeProvider theme={theme}>
-            <Typography variant="h1">Welcome, {name}!</Typography>
-        </ThemeProvider>
+        <Grid container spacing={8}>
+            <Grid item xs={12}>
+                <ThemeProvider theme={theme}>
+                    <Typography variant="h1">Hey, {props.name}!</Typography>
+                </ThemeProvider>
+            </Grid>
+            <Grid item xs={12}>
+                <Typography variant="h3">Your Projects</Typography>
+            </Grid>
+            <Grid item xs={12}>
+                <Typography variant="h3">Your Meetings</Typography>
+            </Grid>
+            <Grid item xs={12}>
+                <Typography variant="h3">Your Deadlines</Typography>
+            </Grid>
+        </Grid>
     )
 }
 

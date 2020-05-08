@@ -44,12 +44,13 @@ export default function LoginDialog(props) {
         const form = { email, password }
 
         axios.post(`http://localhost:6969/login`, form, {headers: {'Content-Type': 'application/json'}}).then(res => {
-            const person = res.data;
-            console.log(person);
-
             openSuccess(true);
             openError(false);
+
+            onClose(res.data);
         }).catch(err => {
+            console.error(err);
+
             openSuccess(false);
             openError(true);
             
