@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
-import {AppBar, Toolbar, Button, IconButton, Typography, Container, Grid, Snackbar} from '@material-ui/core/';
+import {AppBar, Toolbar, Button, IconButton, Typography, Container, Grid, Snackbar, Menu, MenuItem} from '@material-ui/core/';
+
 import {makeStyles, createMuiTheme, responsiveFontSizes, ThemeProvider} from '@material-ui/core/styles';
 import MuiAlert from '@material-ui/lab/Alert';
 
 import MenuIcon from '@material-ui/icons/Menu';
 
 import LoginDialog from './Components/LoginDialog';
+import YourProjects from './Components/YourProjects';
+import YourDeadlines from './Components/YourDeadlines';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -26,23 +29,36 @@ function Alert(props) {
 }
 
 function App() {
-    const [open, setOpen] = React.useState(false);
+    const [openDialog, setOpenDialog] = React.useState(false);
+
     const [login, setLogin] = React.useState(false);
-    const [loginSnack, setLoginSnack] = React.useState(false); 
+    const [loginSnack, setLoginSnack] = React.useState(false);
+
+    const [menuAnchor, setMenuAnchor] = React.useState(null);
 
     const [name, setName] = React.useState("");
     const [email, setEmail] = React.useState("");
+    const [projList, setProjList] = React.useState("");
 
-    const handleClickOpen = () => {
-        setOpen(true);
+    const handleClickOpen = (event) => {
+        if(!login){
+            setOpenDialog(true);
+        } else{
+            setMenuAnchor(event.currentTarget);
+        }
+        
     }
 
     const handleClose = (value) => {
-        setOpen(false);
+        setOpenDialog(false);
 
         if(typeof value !== 'undefined'){
             setName(`${value.firstName} ${value.lastName}`);
             setEmail(`${value.email}`);
+
+            localStorage.setItem('email', value.email);
+            localStorage.setItem('name', `${value.firstName} ${value.lastName}`);
+
             setLogin(true);
             setLoginSnack(true);
         }
@@ -52,7 +68,21 @@ function App() {
         setLoginSnack(false);
     }
 
+    const handleMenuClose = () => {
+        setMenuAnchor(null);
+    }
+
     const classes = useStyles();
+
+    useEffect(() => {
+        if(localStorage.getItem('email') && localStorage.getItem('name')) {
+            console.log("oh wow its stored");
+            setName(localStorage.getItem('name'));
+            setEmail(localStorage.getItem('email'));
+    
+            setLogin(true);
+        }
+    }, [])
 
     return (
         <React.Fragment>
@@ -61,11 +91,15 @@ function App() {
                     <IconButton edge="start" color="inherit" className={classes.menuButton}>
                         <MenuIcon />
                     </IconButton>
-
                     <Typography variant="h6" className={classes.title}>PMS</Typography>
 
                     <Button color="inherit" onClick={handleClickOpen}>{login ? name : "Login"}</Button>
-                    <LoginDialog open={open} onClose={handleClose} />
+                    <Menu id="accountMenu" anchorOrigin={{vertical: 'top', horizontal: 'right'}} anchorEl={menuAnchor} keepMounted open={Boolean(menuAnchor)} onClose={handleMenuClose}>
+                        <MenuItem onClose={handleMenuClose}>My Account</MenuItem>
+                        <MenuItem onClose={handleMenuClose}>Logout</MenuItem>
+                    </Menu>
+
+                    <LoginDialog open={openDialog} onClose={handleClose} />
                 </Toolbar>
             </AppBar>
             <div className={classes.offset} />
@@ -91,21 +125,23 @@ const LoggedOut = () => {
 
 const LoggedIn = (props) => {
     return (
-        <Grid container spacing={8}>
+        <Grid container spacing={4} align="center" justify="space-around">
             <Grid item xs={12}>
                 <ThemeProvider theme={theme}>
-                    <Typography variant="h1">Hey, {props.name}!</Typography>
+                    <Typography variant="h2">Hey, {props.name}!</Typography>
                 </ThemeProvider>
             </Grid>
             <Grid item xs={12}>
                 <Typography variant="h3">Your Projects</Typography>
             </Grid>
+            <YourProjects/>
             <Grid item xs={12}>
                 <Typography variant="h3">Your Meetings</Typography>
             </Grid>
             <Grid item xs={12}>
                 <Typography variant="h3">Your Deadlines</Typography>
             </Grid>
+            <YourDeadlines/>
         </Grid>
     )
 }
