@@ -1,15 +1,18 @@
 import React, { useEffect } from 'react';
+import {BrowserRouter as Router, Redirect, Switch, Route} from 'react-router-dom';
 
-import {AppBar, Toolbar, Button, IconButton, Typography, Container, Grid, Snackbar, Menu, MenuItem} from '@material-ui/core/';
+import {AppBar, Toolbar, Button, IconButton, Typography, Container, Grid, Snackbar, Menu, MenuItem, Drawer, List, ListItem, ListItemText} from '@material-ui/core/';
 
 import {makeStyles, createMuiTheme, responsiveFontSizes, ThemeProvider} from '@material-ui/core/styles';
-import MuiAlert from '@material-ui/lab/Alert';
 
+import MuiAlert from '@material-ui/lab/Alert';
 import MenuIcon from '@material-ui/icons/Menu';
 
 import LoginDialog from './Components/LoginDialog';
-import YourProjects from './Components/YourProjects';
-import YourDeadlines from './Components/YourDeadlines';
+import YourProjects from './Components/HomePage/YourProjects';
+import YourDeadlines from './Components/HomePage/YourDeadlines';
+import YourMeetings from './Components/HomePage/YourMeetings';
+import Project from './Components/ProjectDashboard/Project';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -91,7 +94,7 @@ function App() {
                     <IconButton edge="start" color="inherit" className={classes.menuButton}>
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" className={classes.title}>PMS</Typography>
+                    <Typography variant="h6" className={classes.title}>Project Management System</Typography>
 
                     <Button color="inherit" onClick={handleClickOpen}>{login ? name : "Login"}</Button>
                     <Menu id="accountMenu" anchorOrigin={{vertical: 'top', horizontal: 'right'}} anchorEl={menuAnchor} keepMounted open={Boolean(menuAnchor)} onClose={handleMenuClose}>
@@ -102,9 +105,21 @@ function App() {
                     <LoginDialog open={openDialog} onClose={handleClose} />
                 </Toolbar>
             </AppBar>
+
             <div className={classes.offset} />
+            
             <Container maxWidth="xl">
-                {login ? <LoggedIn name={name} email={email}/> : <LoggedOut />}
+                <Router>
+                    <Switch>
+                        <Redirect from="/" exact to="/dashboard" />
+                        <Route path='/dashboard'>
+                            {login ? <LoggedIn name={name} email={email}/> : <LoggedOut />}
+                        </Route>
+                        <Route path='/project/:id'>
+                            <Project />
+                        </Route>
+                    </Switch>
+                </Router>
             </Container>
 
             <Snackbar open={loginSnack} anchorOrigin={{vertical: 'bottom', horizontal: 'center'}} autoHideDuration={6000} onClose={handleLoginClose}>
@@ -138,6 +153,7 @@ const LoggedIn = (props) => {
             <Grid item xs={12}>
                 <Typography variant="h3">Your Meetings</Typography>
             </Grid>
+            <YourMeetings/>
             <Grid item xs={12}>
                 <Typography variant="h3">Your Deadlines</Typography>
             </Grid>

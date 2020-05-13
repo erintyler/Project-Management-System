@@ -31,7 +31,7 @@ function YourProjects(props) {
                         </Typography>
                     </CardContent>
                     <CardActions>
-                        <Button size="small" color="primary">View Project</Button>
+                        <Button size="small" color="primary" href={`./project/${project.id}`}>View Project</Button>
                     </CardActions>
                 </Card>
             </Grid>
