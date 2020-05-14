@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import {BrowserRouter as Router, Redirect, Switch, Route} from 'react-router-dom';
+import {BrowserRouter as Router, Redirect, Switch, Route, useLocation, useHistory} from 'react-router-dom';
 
-import {AppBar, Toolbar, Button, IconButton, Typography, Container, Grid, Snackbar, Menu, MenuItem, Drawer, List, ListItem, ListItemText} from '@material-ui/core/';
+import {AppBar, Toolbar, Button, IconButton, Typography, Container, Grid, Snackbar, Menu, MenuItem} from '@material-ui/core/';
 
 import {makeStyles, createMuiTheme, responsiveFontSizes, ThemeProvider} from '@material-ui/core/styles';
 
@@ -31,7 +31,8 @@ function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-function App() {
+function App(props) {
+
     const [openDialog, setOpenDialog] = React.useState(false);
 
     const [login, setLogin] = React.useState(false);
@@ -71,7 +72,18 @@ function App() {
         setLoginSnack(false);
     }
 
-    const handleMenuClose = () => {
+    const handleMenuClose = (event) => {
+        console.log(event.target.id);
+
+        if(event.target.id === "account") {
+            //TODO: Open Account Menu
+        } else if(event.target.id === "logout") {
+            localStorage.clear();
+
+            setLoginSnack(true);
+            setLogin(false);
+        }
+
         setMenuAnchor(null);
     }
 
@@ -98,8 +110,8 @@ function App() {
 
                     <Button color="inherit" onClick={handleClickOpen}>{login ? name : "Login"}</Button>
                     <Menu id="accountMenu" anchorOrigin={{vertical: 'top', horizontal: 'right'}} anchorEl={menuAnchor} keepMounted open={Boolean(menuAnchor)} onClose={handleMenuClose}>
-                        <MenuItem onClose={handleMenuClose}>My Account</MenuItem>
-                        <MenuItem onClose={handleMenuClose}>Logout</MenuItem>
+                        <MenuItem id="account" onClick={handleMenuClose}>My Account</MenuItem>
+                        <MenuItem id="logout" onClick={handleMenuClose}>Logout</MenuItem>
                     </Menu>
 
                     <LoginDialog open={openDialog} onClose={handleClose} />
@@ -118,14 +130,28 @@ function App() {
                         <Route path='/project/:id'>
                             <Project />
                         </Route>
+                        <Route component={NotFound} />
                     </Switch>
                 </Router>
             </Container>
 
             <Snackbar open={loginSnack} anchorOrigin={{vertical: 'bottom', horizontal: 'center'}} autoHideDuration={6000} onClose={handleLoginClose}>
-                <Alert onClose={handleLoginClose} severity="success">Logged In!</Alert>
+                <Alert onClose={handleLoginClose} severity="success">{(login ? "Logged In!" : "Logged Out!")}</Alert>
             </Snackbar>
+
+            
         </React.Fragment>
+    );
+}
+
+const NotFound = () => {
+    const location = useLocation();
+
+    return(
+        <Redirect to={{
+            pathname: "/dashboard",
+            state: { error: `Page ${location.pathname} does not exist`}
+        }}/>
     );
 }
 
@@ -139,26 +165,60 @@ const LoggedOut = () => {
 }
 
 const LoggedIn = (props) => {
+    let location = useLocation();
+    let history = useHistory();
+
+    const [error, setError] = React.useState("");
+
+    const handleErrorClose = () => {
+        setError(null);
+    }
+
+    React.useEffect(() => {
+        if(location.state !== undefined && location.state.error !== undefined) {
+            console.error(location.state.error);
+            setError(location.state.error);
+
+            history.replace({
+                pathname: '/dashboard',
+                state: {}
+            });
+        } else {
+            setError(null);
+        }
+    }, [])
+
+
     return (
-        <Grid container spacing={4} align="center" justify="space-around">
-            <Grid item xs={12}>
-                <ThemeProvider theme={theme}>
-                    <Typography variant="h2">Hey, {props.name}!</Typography>
-                </ThemeProvider>
+        <React.Fragment>
+            <Grid container spacing={4} align="center" justify="space-around">
+                <Grid item xs={12}>
+                    <ThemeProvider theme={theme}>
+                        <Typography variant="h2">Hey, {props.name}!</Typography>
+                    </ThemeProvider>
+                </Grid>
+
+                <Grid item xs={12}>
+                    <Typography variant="h3">Your Projects</Typography>
+                </Grid>
+                <YourProjects/>
+
+                <Grid item xs={12}>
+                    <Typography variant="h3">Your Meetings</Typography>
+                </Grid>
+                <YourMeetings/>
+
+                <Grid item xs={12}>
+                    <Typography variant="h3">Your Deadlines</Typography>
+                </Grid>
+                <YourDeadlines/>
             </Grid>
-            <Grid item xs={12}>
-                <Typography variant="h3">Your Projects</Typography>
-            </Grid>
-            <YourProjects/>
-            <Grid item xs={12}>
-                <Typography variant="h3">Your Meetings</Typography>
-            </Grid>
-            <YourMeetings/>
-            <Grid item xs={12}>
-                <Typography variant="h3">Your Deadlines</Typography>
-            </Grid>
-            <YourDeadlines/>
-        </Grid>
+
+            <Snackbar open={Boolean(error)} anchorOrigin={{vertical: 'bottom', horizontal: 'center'}} autoHideDuration={6000} onClose={handleErrorClose}>
+                <Alert onClose={handleErrorClose} severity="error">{error}</Alert>
+            </Snackbar>
+        </React.Fragment>
+
     )
 }
 
