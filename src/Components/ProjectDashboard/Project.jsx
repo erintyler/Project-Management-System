@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 
-import {useParams} from "react-router-dom";
+import {useParams, Redirect} from "react-router-dom";
 
 import {Box, Typography, Grid, Tabs, Tab } from "@material-ui/core";
 import {makeStyles, createMuiTheme, responsiveFontSizes, ThemeProvider} from '@material-ui/core/styles';
@@ -35,16 +35,26 @@ export default function Project(props) {
     let {id} = useParams();
 
     React.useEffect(() => {
-        axios.get(`http://localhost:6969/getProject?id=${id}`).then(res => {
+        axios.get(`http://localhost:6969/getProject?id=${id}`).then(res => {    
             setProject(res.data);
-        })
+        });
     }, [id]);
 
     const handleChange = (event, newValue) => {
         setTab(newValue);
     }
 
+    if(project === "") {
+        return(
+            <Redirect to={{
+                pathname: "/dashboard",
+                state: { error: `Project ${id} was not found`}
+            }}/>
+        );
+    }
+
     return (
+        
         <ThemeProvider theme={theme}>
             <Grid container spacing={4}>
                 <Grid item sm={12} xs={12}>
