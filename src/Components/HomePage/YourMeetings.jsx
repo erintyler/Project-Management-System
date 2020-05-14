@@ -22,8 +22,6 @@ function YourMeetings(props) {
         )
         .then((res) => {
             setMeetingList(res.data);
-
-            console.log(meetingList);
         });
     }, [localStorage.getItem("email")]);
 

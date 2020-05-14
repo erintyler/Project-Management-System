@@ -22,8 +22,6 @@ function YourDeadlines(props) {
         )
         .then((res) => {
             setDeadlineList(res.data);
-
-            console.log(deadlineList);
         });
     }, [localStorage.getItem("email")]);
 
