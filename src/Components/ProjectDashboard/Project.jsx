@@ -35,13 +35,22 @@ export default function Project(props) {
     let {id} = useParams();
 
     React.useEffect(() => {
-        axios.get(`http://localhost:6969/getProject?id=${id}`).then(res => {    
+        axios.get(`http://192.168.1.125:6969/getProject?id=${id}`).then(res => {    
             setProject(res.data);
         });
     }, [id]);
 
     const handleChange = (event, newValue) => {
         setTab(newValue);
+    }
+
+    if(localStorage.getItem('email') === null) {
+        return(
+            <Redirect to={{
+                pathname: "/dashboard",
+                state: { error: `You need to be logged in to view this page!`}
+            }}/>
+        );
     }
 
     if(project === "") {
@@ -61,7 +70,7 @@ export default function Project(props) {
                     <Typography variant="h1">{project.name}</Typography>
                     <Typography variant="h2" color="textSecondary">{project.description}</Typography>
                 </Grid>
-                <Grid item md={12} sm={12}>
+                <Grid item md={12} xs={12}>
                     <Tabs value={tab} onChange={handleChange} indicatorColor="primary" textColor="primary" variant="scrollable">
                         <Tab label="Overview"/>
                         <Tab label="Meetings"/>
@@ -72,7 +81,7 @@ export default function Project(props) {
                     </Tabs>
                 </Grid>
                 <Grid item md={12} xs={12}>
-                    <TabPanel value={tab} index={0}><Overview/></TabPanel>
+                    <TabPanel value={tab} index={0}><Overview id={project.id}/></TabPanel>
                     <TabPanel value={tab} index={1}>Meetings</TabPanel>
                     <TabPanel value={tab} index={2}>Deadlines</TabPanel>
                     <TabPanel value={tab} index={3}>Members</TabPanel>
