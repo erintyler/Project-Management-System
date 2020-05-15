@@ -43,7 +43,7 @@ export default function LoginDialog(props) {
     const handleLogin = () => {
         const form = { email, password }
 
-        axios.post(`http://localhost:6969/login`, form, {headers: {'Content-Type': 'application/json'}}).then(res => {
+        axios.post(`http://192.168.1.125:6969/login`, form, {headers: {'Content-Type': 'application/json'}}).then(res => {
             openSuccess(true);
             openError(false);
 
