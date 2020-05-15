@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+
 import 'typeface-roboto'
+import { SnackbarProvider } from 'notistack';
 
 import App from './App';
 
@@ -8,7 +10,10 @@ import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(  
   <React.Fragment>
-    <App />
+    <SnackbarProvider>
+      <App />
+    </SnackbarProvider>
+    
   </React.Fragment>,
   document.getElementById('root')
 );
