@@ -18,12 +18,20 @@ function YourDeadlines(props) {
     React.useEffect(() => {
         axios
         .get(
-            `http://localhost:6969/getUserDeadlines?email=${localStorage.getItem("email")}`
+            `http://192.168.1.125:6969/getUserDeadlines?email=${localStorage.getItem("email")}`
         )
         .then((res) => {
             setDeadlineList(res.data);
         });
     }, [localStorage.getItem("email")]);
+
+    if(deadlineList.length === 0) {
+        return (
+            <Grid item md={12} xs={12}>
+                <Typography variant="h4" color="textSecondary">You have no upcoming deadlines.</Typography>
+            </Grid>
+        )
+    }
 
     return deadlineList.map((deadline) => {
         const date = new Date(deadline.date).toLocaleDateString();

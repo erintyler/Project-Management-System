@@ -9,7 +9,7 @@ function YourProjects(props) {
     React.useEffect(() => {
         axios
         .get(
-            `http://localhost:6969/userProjects?email=${localStorage.getItem(
+            `http://192.168.1.125:6969/userProjects?email=${localStorage.getItem(
             "email"
             )}`
         )
@@ -17,6 +17,14 @@ function YourProjects(props) {
             setProjList(res.data[0].Project);
         });
     }, [localStorage.getItem("email")]);
+
+    if(projList.length === 0) {
+        return (
+            <Grid item md={12} xs={12}>
+                <Typography variant="h4" color="textSecondary">You are not a member of any projects.</Typography>
+            </Grid>
+        )
+    }
 
     return projList.map((project) => {
         return (

@@ -18,12 +18,20 @@ function YourMeetings(props) {
     React.useEffect(() => {
         axios
         .get(
-            `http://localhost:6969/getUserMeetings?email=${localStorage.getItem("email")}`
+            `http://192.168.1.125:6969/getUserMeetings?email=${localStorage.getItem("email")}`
         )
         .then((res) => {
             setMeetingList(res.data);
         });
     }, [localStorage.getItem("email")]);
+
+    if(meetingList.length === 0) {
+        return (
+            <Grid item md={12} xs={12}>
+                <Typography variant="h4" color="textSecondary">You have no upcoming meetings.</Typography>
+            </Grid>
+        )
+    }
 
     return meetingList.map((meeting) => {
         const date = new Date(meeting.date).toLocaleDateString();
