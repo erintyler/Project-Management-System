@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import {BrowserRouter as Router, Redirect, Switch, Route, useLocation, useHistory} from 'react-router-dom';
 
-import {AppBar, Toolbar, Button, IconButton, Typography, Container, Grid, Snackbar, Menu, MenuItem} from '@material-ui/core/';
+import {AppBar, Toolbar, Button, IconButton, Typography, Container, Grid, Menu, MenuItem} from '@material-ui/core/';
+import {useSnackbar} from 'notistack';
 
 import {makeStyles, createMuiTheme, responsiveFontSizes, ThemeProvider} from '@material-ui/core/styles';
 
@@ -32,17 +33,16 @@ function Alert(props) {
 }
 
 function App(props) {
-
     const [openDialog, setOpenDialog] = React.useState(false);
 
     const [login, setLogin] = React.useState(false);
-    const [loginSnack, setLoginSnack] = React.useState(false);
 
     const [menuAnchor, setMenuAnchor] = React.useState(null);
 
     const [name, setName] = React.useState("");
     const [email, setEmail] = React.useState("");
-    const [projList, setProjList] = React.useState("");
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const handleClickOpen = (event) => {
         if(!login){
@@ -64,27 +64,23 @@ function App(props) {
             localStorage.setItem('name', `${value.firstName} ${value.lastName}`);
 
             setLogin(true);
-            setLoginSnack(true);
+            
+            enqueueSnackbar('Logged In', {variant: 'success'});
         }
-    }
-
-    const handleLoginClose = () => {
-        setLoginSnack(false);
     }
 
     const handleMenuClose = (event) => {
         console.log(event.target.id);
+        setMenuAnchor(null);
 
         if(event.target.id === "account") {
             //TODO: Open Account Menu
         } else if(event.target.id === "logout") {
             localStorage.clear();
 
-            setLoginSnack(true);
             setLogin(false);
+            enqueueSnackbar('Logged Out', {variant: 'success'});
         }
-
-        setMenuAnchor(null);
     }
 
     const classes = useStyles();
@@ -135,10 +131,6 @@ function App(props) {
                 </Router>
             </Container>
 
-            <Snackbar open={loginSnack} anchorOrigin={{vertical: 'bottom', horizontal: 'center'}} autoHideDuration={6000} onClose={handleLoginClose}>
-                <Alert onClose={handleLoginClose} severity="success">{(login ? "Logged In!" : "Logged Out!")}</Alert>
-            </Snackbar>
-
             
         </React.Fragment>
     );
@@ -157,38 +149,19 @@ const NotFound = () => {
 
 const LoggedOut = () => {
     return (
-        <ThemeProvider theme={theme}>
-            <Typography variant="h1">Access Denied</Typography>
-            <Typography variant="h3">You need to be logged in to use this application.</Typography>
-        </ThemeProvider>
+        <React.Fragment>
+            <ThemeProvider theme={theme}>
+                <Typography variant="h1">Access Denied</Typography>
+                <Typography variant="h3">You need to be logged in to use this application.</Typography>
+            </ThemeProvider>
+
+            <ErrorMessage/>
+        </React.Fragment>
+
     )
 }
 
 const LoggedIn = (props) => {
-    let location = useLocation();
-    let history = useHistory();
-
-    const [error, setError] = React.useState("");
-
-    const handleErrorClose = () => {
-        setError(null);
-    }
-
-    React.useEffect(() => {
-        if(location.state !== undefined && location.state.error !== undefined) {
-            console.error(location.state.error);
-            setError(location.state.error);
-
-            history.replace({
-                pathname: '/dashboard',
-                state: {}
-            });
-        } else {
-            setError(null);
-        }
-    }, [])
-
-
     return (
         <React.Fragment>
             <Grid container spacing={4} align="center" justify="space-around">
@@ -214,12 +187,33 @@ const LoggedIn = (props) => {
                 <YourDeadlines/>
             </Grid>
 
-            <Snackbar open={Boolean(error)} anchorOrigin={{vertical: 'bottom', horizontal: 'center'}} autoHideDuration={6000} onClose={handleErrorClose}>
-                <Alert onClose={handleErrorClose} severity="error">{error}</Alert>
-            </Snackbar>
+            <ErrorMessage />
+
         </React.Fragment>
 
     )
+}
+
+const ErrorMessage = (props) => {
+    let location = useLocation();
+    let history = useHistory();
+
+    const { enqueueSnackbar } = useSnackbar();
+
+    React.useEffect(() => {
+        if(location.state !== undefined && location.state.error !== undefined) {
+            console.error(location.state.error);
+            
+            enqueueSnackbar(location.state.error, {variant: 'error'});
+
+            history.replace({
+                pathname: '/dashboard',
+                state: {}
+            });
+        }
+    }, []);
+
+    return null;
 }
 
 export default App;
