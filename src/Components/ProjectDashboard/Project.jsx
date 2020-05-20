@@ -4,12 +4,18 @@ import axios from "axios";
 import {useParams, Redirect} from "react-router-dom";
 
 import {Box, Typography, Grid, Tabs, Tab } from "@material-ui/core";
-import {makeStyles, createMuiTheme, responsiveFontSizes, ThemeProvider} from '@material-ui/core/styles';
+import {createMuiTheme, responsiveFontSizes, ThemeProvider} from '@material-ui/core/styles';
 
 import Overview from './Overview';
+import Meetings from './Meetings';
+import { makeStyles } from "@material-ui/styles";
+import AddMeetingDialog from "./MeetingComponents/AddMeetingDialog";
 
-let theme = createMuiTheme();
-theme = responsiveFontSizes(theme);
+const useStyles = makeStyles({
+    title: {
+        marginTop: 12,
+    }
+});
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -31,6 +37,8 @@ function TabPanel(props) {
 export default function Project(props) {
     const [project, setProject] = React.useState({});
     const [tab, setTab] = React.useState(0);
+
+    const classes = useStyles();
 
     let {id} = useParams();
 
@@ -63,9 +71,9 @@ export default function Project(props) {
     }
 
     return (
-        
-        <ThemeProvider theme={theme}>
-            <Grid container spacing={4}>
+        <React.Fragment>
+            <AddMeetingDialog open={true} onClose={"test"} />
+            <Grid container spacing={4} className={classes.title}>
                 <Grid item sm={12} xs={12}>
                     <Typography variant="h1">{project.name}</Typography>
                     <Typography variant="h2" color="textSecondary">{project.description}</Typography>
@@ -82,14 +90,13 @@ export default function Project(props) {
                 </Grid>
                 <Grid item md={12} xs={12}>
                     <TabPanel value={tab} index={0}><Overview id={project.id}/></TabPanel>
-                    <TabPanel value={tab} index={1}>Meetings</TabPanel>
+                    <TabPanel value={tab} index={1}><Meetings id={project.id}/></TabPanel>
                     <TabPanel value={tab} index={2}>Deadlines</TabPanel>
                     <TabPanel value={tab} index={3}>Members</TabPanel>
                     <TabPanel value={tab} index={4}>Devices</TabPanel>
                     <TabPanel value={tab} index={5}>Invoices</TabPanel>
                 </Grid>
             </Grid>
-        </ThemeProvider>
-        
+        </React.Fragment>
     )
 }
