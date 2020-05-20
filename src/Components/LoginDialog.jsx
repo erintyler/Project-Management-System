@@ -4,13 +4,13 @@ import axios from 'axios';
 import {makeStyles} from '@material-ui/core/styles';
 
 import {Button, TextField, Collapse} from '@material-ui/core';
-import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@material-ui/core';
+import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid} from '@material-ui/core';
 
 import {Alert, AlertTitle} from '@material-ui/lab'
 
 const useStyles = makeStyles((theme) => ({
-    field: {
-        marginRight: theme.spacing(1),
+    bottom: {
+        marginBottom: theme.spacing(1),
     },
 }));
 
@@ -44,7 +44,7 @@ export default function LoginDialog(props) {
         const form = { email, password }
 
         axios.post(`http://192.168.1.125:6969/login`, form, {headers: {'Content-Type': 'application/json'}}).then(res => {
-            openSuccess(true);
+            openSuccess(false);
             openError(false);
 
             onClose(res.data);
@@ -77,9 +77,14 @@ export default function LoginDialog(props) {
                 
 
                 <DialogContent>
-
-                    <TextField autoFocus margin="dense" id="username" label="Username" type="string" className={classes.field} onChange={handleOnChange} />
-                    <TextField margin="dense" id="password" label="Password" type="password" onChange={handleOnChange} />
+                <Grid container spacing={2} align="center" justify="space-around" className={classes.bottom}>
+                    <Grid item xs={12}>
+                        <TextField autoFocus margin="dense" id="username" label="Username" type="string" fullWidth onChange={handleOnChange} />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField margin="dense" id="password" label="Password" type="password" fullWidth onChange={handleOnChange} />
+                    </Grid>
+                </Grid>
                 </DialogContent>
 
                 <DialogActions>
