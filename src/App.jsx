@@ -23,10 +23,11 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   offset: theme.mixins.toolbar,
-}));
 
-let theme = createMuiTheme();
-theme = responsiveFontSizes(theme);
+  welcomeMessage: {
+      marginTop: 32,
+  }
+}));
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -70,7 +71,6 @@ function App(props) {
     }
 
     const handleMenuClose = (event) => {
-        console.log(event.target.id);
         setMenuAnchor(null);
 
         if(event.target.id === "account") {
@@ -97,7 +97,7 @@ function App(props) {
 
     return (
         <React.Fragment>
-            <AppBar position='fixed'>
+            <AppBar position='fixed' color='primary'>
                 <Toolbar>
                     <IconButton edge="start" color="inherit" className={classes.menuButton}>
                         <MenuIcon />
@@ -150,10 +150,8 @@ const NotFound = () => {
 const LoggedOut = () => {
     return (
         <React.Fragment>
-            <ThemeProvider theme={theme}>
-                <Typography variant="h1">Access Denied</Typography>
-                <Typography variant="h3">You need to be logged in to use this application.</Typography>
-            </ThemeProvider>
+            <Typography variant="h1">Access Denied</Typography>
+            <Typography variant="h3">You need to be logged in to use this application.</Typography>
 
             <ErrorMessage/>
         </React.Fragment>
@@ -162,13 +160,13 @@ const LoggedOut = () => {
 }
 
 const LoggedIn = (props) => {
+    const classes = useStyles();
+
     return (
         <React.Fragment>
             <Grid container spacing={4} align="center" justify="space-around">
                 <Grid item xs={12}>
-                    <ThemeProvider theme={theme}>
-                        <Typography variant="h2">Hey, {props.name}!</Typography>
-                    </ThemeProvider>
+                    <Typography variant="h2" className={classes.welcomeMessage}>Hey, {props.name}!</Typography>
                 </Grid>
 
                 <Grid item xs={12}>

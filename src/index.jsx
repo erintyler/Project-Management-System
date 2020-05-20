@@ -8,11 +8,27 @@ import App from './App';
 
 import * as serviceWorker from './serviceWorker';
 
+import { ThemeProvider, CssBaseline, createMuiTheme, responsiveFontSizes } from '@material-ui/core';
+import { deepPurple, purple, blue, deepOrange, grey, blueGrey, yellow, amber } from '@material-ui/core/colors';
+
+let theme = createMuiTheme({
+  palette: {
+    type: "dark",
+    primary: amber
+  }
+});
+
+theme = responsiveFontSizes(theme);
+
 ReactDOM.render(  
   <React.Fragment>
-    <SnackbarProvider>
-      <App />
-    </SnackbarProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline/>
+
+      <SnackbarProvider>
+        <App />
+      </SnackbarProvider>
+    </ThemeProvider>
     
   </React.Fragment>,
   document.getElementById('root')
