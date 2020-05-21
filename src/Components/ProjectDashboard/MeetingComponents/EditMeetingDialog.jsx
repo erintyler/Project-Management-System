@@ -24,14 +24,30 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function AddMeetingDialog(props) {
+export default function EditMeetingDialog(props) {
     const classes = useStyles();
-    const {onClose, open} = props;
+    const {onClose, open, meeting} = props;
 
+    const [id, setId] = React.useState(null);
     const [title, setTitle] = React.useState("");
     const [description, setDescription] = React.useState("");
     const [selectedDate, setSelectedDate] = React.useState(moment());
     const [selectedTime, setSelectedTime] = React.useState(moment());
+
+    React.useEffect(() => {
+        if(meeting !== null && meeting !== undefined) {
+            const date = moment(meeting.date.toString().substring(0,10), "DD/MM/YYYY");
+            const time = moment(meeting.date.toString().substring(14,22), "HH:mm:ss");
+
+            setId(meeting.id);
+            setTitle(meeting.title);
+            setDescription(meeting.description);
+            setSelectedDate(date);
+            setSelectedTime(time);
+
+            console.log(meeting);
+        }
+    }, [meeting]);
 
     const [error, openError] = React.useState(false);
     const [success, openSuccess] = React.useState(false);
@@ -68,6 +84,8 @@ export default function AddMeetingDialog(props) {
         const response = createMeetings(newMeeting);
 
         const setMessage = (response) => {
+            console.log(response);
+
             if(response.error) {
                 setErrorMessage(response.description);
                 openSuccess(false);
@@ -127,20 +145,30 @@ export default function AddMeetingDialog(props) {
             }
         } else {
             const title = meeting.title;
-            const desc = meeting.description;
+            const description = meeting.description;
             const date = moment(`${meeting.selectedDate.format("L")} ${meeting.selectedTime.format("LT")}`).toDate();
-            const projectId = props.id;
 
-            const form = {title, description, date, projectId}
+            const form = {title, description, date, id}
 
-            return axios.post('http://192.168.1.125:6969/addMeeting', form, {headers: {'Content-Type': 'application/json'}}).then(res => {
-                form.id = res.data.meetingId;
+            console.log(form);
+
+            return axios.post('http://192.168.1.125:6969/editMeeting', form, {headers: {'Content-Type': 'application/json'}}).then(res => {
                 form.date = `${new Date(date).toLocaleDateString()} at ${new Date(date).toLocaleTimeString()}`
 
+                console.log(res.data);
+
                 return {
-                    error: false,
+                    error: res.data.error,
                     meeting: form,
                     description: res.data.message
+                }
+            }).catch(err => {
+                console.log(err.response);
+
+                return {
+                    error: true,
+                    meeting: form,
+                    description: `${err.response.status} ${err.response.statusText} : ${err.response.data.message}`
                 }
             });
         }
@@ -149,7 +177,7 @@ export default function AddMeetingDialog(props) {
     return(
         <div>
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle id="loginTitle">Add Meeting</DialogTitle>
+                <DialogTitle id="loginTitle">Edit Meeting</DialogTitle>
                 <Collapse in={error}>
                     <Alert severity="error">
                         <AlertTitle>Error</AlertTitle>
@@ -170,10 +198,10 @@ export default function AddMeetingDialog(props) {
                     <MuiPickersUtilsProvider utils={MomentUtils}>
                         <Grid container spacing={2} align="center" justify="space-around" className={classes.bottom}>
                             <Grid item xs={12} sm={12}>
-                                <TextField autoFocus margin="dense" id="title" label="Meeting Title" type="string" fullWidth onChange={handleOnChange} />
+                                <TextField autoFocus margin="dense" id="title" label="Meeting Title" type="string" value={title} fullWidth onChange={handleOnChange} />
                             </Grid>
                             <Grid item xs={12} sm={12}>
-                                <TextField margin="dense" id="description" label="Meeting Description" type="string" fullWidth multiline onChange={handleOnChange} />
+                                <TextField margin="dense" id="description" label="Meeting Description" type="string" value={description} fullWidth multiline onChange={handleOnChange} />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <KeyboardDatePicker margin="normal" variant="inline" id="datePicker" label="Date" format="DD/MM/yyyy" value={selectedDate} fullWidth onChange={handleDateChange}/>
@@ -191,7 +219,7 @@ export default function AddMeetingDialog(props) {
                         Cancel
                     </Button>
                     <Button onClick={handleSubmit} color="primary">
-                        Create
+                        Update
                     </Button>
                 </DialogActions>
             </Dialog>
