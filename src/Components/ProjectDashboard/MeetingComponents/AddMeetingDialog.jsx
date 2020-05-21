@@ -33,16 +33,8 @@ export default function AddMeetingDialog(props) {
     const [selectedDate, setSelectedDate] = React.useState(moment());
     const [selectedTime, setSelectedTime] = React.useState(moment());
 
-    const [error, openError] = React.useState(false);
-    const [success, openSuccess] = React.useState(false);
-
-    const [errorMessage, setErrorMessage] = React.useState("");
-    const [successMessage, setSuccessMessage] = React.useState("");
-
     const handleClose = () => {
         onClose();
-        openError(false);
-        openSuccess(false);
     };
 
     const handleOnChange = event => {
@@ -68,21 +60,7 @@ export default function AddMeetingDialog(props) {
         const response = createMeetings(newMeeting);
 
         const setMessage = (response) => {
-            if(response.error) {
-                setErrorMessage(response.description);
-                openSuccess(false);
-                openError(true);
-
-                setTimeout(() => {
-                    openError(false);
-                }, 5000)
-            } else if(!response.error) {
-                openError(false);
-                setTitle("");
-                setDescription("");
-
-                onClose(response.description, response.meeting);
-            }
+            onClose(response.description, response.meeting, response.error);
         }
 
         if(response != null && typeof response.then === 'function') {
@@ -127,7 +105,7 @@ export default function AddMeetingDialog(props) {
             }
         } else {
             const title = meeting.title;
-            const desc = meeting.description;
+            const description = meeting.description;
             const date = moment(`${meeting.selectedDate.format("L")} ${meeting.selectedTime.format("LT")}`).toDate();
             const projectId = props.id;
 
@@ -142,6 +120,14 @@ export default function AddMeetingDialog(props) {
                     meeting: form,
                     description: res.data.message
                 }
+            }).catch(err => {
+                console.log(err.response);
+
+                return {
+                    error: true,
+                    meeting: form,
+                    description: `${err.response.status} ${err.response.statusText} : ${err.response.data.message}`
+                }
             });
         }
     }
@@ -150,21 +136,6 @@ export default function AddMeetingDialog(props) {
         <div>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle id="loginTitle">Add Meeting</DialogTitle>
-                <Collapse in={error}>
-                    <Alert severity="error">
-                        <AlertTitle>Error</AlertTitle>
-                        {errorMessage}
-                    </Alert>
-                </Collapse>
-
-                <Collapse in={success}>
-                    <Alert severity="success">
-                        <AlertTitle>Success</AlertTitle>
-                        {successMessage}
-                    </Alert>
-                </Collapse>
-                
-
                 <DialogContent>
                 <div className={classes.root}>
                     <MuiPickersUtilsProvider utils={MomentUtils}>

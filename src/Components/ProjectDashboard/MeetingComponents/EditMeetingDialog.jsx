@@ -49,16 +49,8 @@ export default function EditMeetingDialog(props) {
         }
     }, [meeting]);
 
-    const [error, openError] = React.useState(false);
-    const [success, openSuccess] = React.useState(false);
-
-    const [errorMessage, setErrorMessage] = React.useState("");
-    const [successMessage, setSuccessMessage] = React.useState("");
-
     const handleClose = () => {
         onClose();
-        openError(false);
-        openSuccess(false);
     };
 
     const handleOnChange = event => {
@@ -81,26 +73,10 @@ export default function EditMeetingDialog(props) {
 
     const handleSubmit = () => {
         const newMeeting = {title, description, selectedDate, selectedTime}
-        const response = createMeetings(newMeeting);
+        const response = editMeeting(newMeeting);
 
         const setMessage = (response) => {
-            console.log(response);
-
-            if(response.error) {
-                setErrorMessage(response.description);
-                openSuccess(false);
-                openError(true);
-
-                setTimeout(() => {
-                    openError(false);
-                }, 5000)
-            } else if(!response.error) {
-                openError(false);
-                setTitle("");
-                setDescription("");
-
-                onClose(response.description, response.meeting);
-            }
+            onClose(response.description, response.meeting, response.error);
         }
 
         if(response != null && typeof response.then === 'function') {
@@ -112,7 +88,7 @@ export default function EditMeetingDialog(props) {
         }
     }
 
-    const createMeetings = (meeting) => {
+    const editMeeting = (meeting) => {
         if(!meeting.title) {
             return {
                 error: true,
@@ -155,8 +131,6 @@ export default function EditMeetingDialog(props) {
             return axios.post('http://192.168.1.125:6969/editMeeting', form, {headers: {'Content-Type': 'application/json'}}).then(res => {
                 form.date = `${new Date(date).toLocaleDateString()} at ${new Date(date).toLocaleTimeString()}`
 
-                console.log(res.data);
-
                 return {
                     error: res.data.error,
                     meeting: form,
@@ -178,21 +152,6 @@ export default function EditMeetingDialog(props) {
         <div>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle id="loginTitle">Edit Meeting</DialogTitle>
-                <Collapse in={error}>
-                    <Alert severity="error">
-                        <AlertTitle>Error</AlertTitle>
-                        {errorMessage}
-                    </Alert>
-                </Collapse>
-
-                <Collapse in={success}>
-                    <Alert severity="success">
-                        <AlertTitle>Success</AlertTitle>
-                        {successMessage}
-                    </Alert>
-                </Collapse>
-                
-
                 <DialogContent>
                 <div className={classes.root}>
                     <MuiPickersUtilsProvider utils={MomentUtils}>

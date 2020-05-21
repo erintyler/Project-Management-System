@@ -57,7 +57,7 @@ export default function LoginDialog(props) {
         });
     }
 
-    return(
+    return (
         <div>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle id="loginTitle">Login</DialogTitle>

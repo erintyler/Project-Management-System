@@ -11,10 +11,12 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 import AddMeetingDialog from "./AddMeetingDialog";
 import EditMeetingDialog from "./EditMeetingDialog";
+import DeleteMeetingDialog from "./DeleteMeetingDialog";
 
 export default function MeetingTable(props) {
     const [openAdd, setOpenAdd] = React.useState(false);
     const [openEdit, setOpenEdit] = React.useState(false);
+    const [openDelete, setOpenDelete] = React.useState(false);
 
     const [optionsAnchor, setOptionsAnchor] = React.useState(null);
 
@@ -23,54 +25,76 @@ export default function MeetingTable(props) {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const handleOptionsClose = (event) => {
-        if(event.target.id === "edit") {
-            setOpenEdit(true);
-        } else if(event.target.id === "delete") {
-            alert(`Deleting ${selectedMeeting.title}`);
-        }
-
-        setOptionsAnchor(null);
-    }
-
     const handleOptionsOpen = (target, rowData) => {
         setSelectedMeeting(rowData);
         setOptionsAnchor(target);
     }
 
-    const handleAddClose = (message, meetings) => {
-        setOpenAdd(false);
-
-        if(message !== undefined) {
-            enqueueSnackbar(message, {variant: 'success'});
-
-            if(meetings !== undefined) {
-                setMeetings(oldMeetings => [...oldMeetings, meetings]);
-            }
+    const handleOptionsClose = (event) => {
+        if(event.target.id === "edit") {
+            setOpenEdit(true);
+        } else if(event.target.id === "delete") {
+            setOpenDelete(true);
         }
+
+        setOptionsAnchor(null);
     }
 
-    const handleEditClose = (message, newMeeting) => {
-        setOpenEdit(false);
-
-        if(message !== undefined) {
-            var oldMeetings = meetings;
-            var index = oldMeetings.indexOf(selectedMeeting);
-
-            console.log(newMeeting);
-
-            oldMeetings.splice(index, 1);
-            oldMeetings.push(newMeeting);
-
-            setMeetings(oldMeetings);
-            setSelectedMeeting(null);
-
-            enqueueSnackbar(message, {variant: 'success'});
-        }
-    }
-
-    const handleClickOpen = () => {
+    const handleAddOpen = () => {
         setOpenAdd(true);
+    }
+
+    const handleAddClose = (message, meetings, error) => {
+        if(message !== undefined) {
+            if(!error) {
+                setOpenAdd(false);
+
+                if(meetings !== undefined) {
+                    setMeetings(oldMeetings => [...oldMeetings, meetings]);
+                }
+            }
+
+            enqueueSnackbar(message, {variant : (error ? 'error' : 'success')});
+        }
+    }
+
+    const handleEditClose = (message, newMeeting, error) => {
+        if(message !== undefined) {
+            if(!error) {
+                setOpenEdit(false);
+
+                var oldMeetings = meetings;
+                var index = oldMeetings.indexOf(selectedMeeting);
+    
+                console.log(newMeeting);
+    
+                oldMeetings.splice(index, 1);
+                oldMeetings.push(newMeeting);
+    
+                setMeetings(oldMeetings);
+                setSelectedMeeting(null);
+            }
+            enqueueSnackbar(message, {variant : (error ? 'error' : 'success')});
+        } else {
+            setOpenEdit(false);
+        }
+    }
+
+    const handleDeleteClose = (message, meeting, error) => {
+        if(message !== undefined) {
+            if(!error) {
+                setOpenDelete(false);
+
+                var oldMeetings = meetings;
+                var index = oldMeetings.indexOf(selectedMeeting);
+
+                oldMeetings.splice(index, 1);
+
+                setMeetings(oldMeetings);
+                setSelectedMeeting(null);
+            }
+            enqueueSnackbar(message, {variant : (error ? 'error' : 'success')});
+        }
     }
 
     const sortDate = (a, b) => {
@@ -84,6 +108,7 @@ export default function MeetingTable(props) {
         <div>
             <AddMeetingDialog open={openAdd} onClose={handleAddClose} id={props.id}/>
             <EditMeetingDialog open={openEdit} onClose={handleEditClose} meeting={selectedMeeting}/>
+            <DeleteMeetingDialog open={openDelete} onClose={handleDeleteClose} meeting={selectedMeeting}/>
 
             <MaterialTable
                 title="Meetings"
@@ -102,7 +127,7 @@ export default function MeetingTable(props) {
                     {
                         icon: 'add',
                         tooltip: 'Options',
-                        onClick: (event, rowData) => handleClickOpen(),
+                        onClick: (event, rowData) => handleAddOpen(),
                         isFreeAction: true
                     }
                 ]}
