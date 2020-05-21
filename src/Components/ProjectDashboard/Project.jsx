@@ -72,7 +72,6 @@ export default function Project(props) {
 
     return (
         <React.Fragment>
-            <AddMeetingDialog open={true} onClose={"test"} />
             <Grid container spacing={4} className={classes.title}>
                 <Grid item sm={12} xs={12}>
                     <Typography variant="h1">{project.name}</Typography>
