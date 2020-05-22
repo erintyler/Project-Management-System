@@ -34,13 +34,9 @@ const useStyles = makeStyles((theme) => ({
   offset: theme.mixins.toolbar,
 
   welcomeMessage: {
-      marginTop: 32,
+      marginTop: theme.spacing(2),
   }
 }));
-
-function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 function App(props) {
     const [openDialog, setOpenDialog] = React.useState(false);
