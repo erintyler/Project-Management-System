@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import {BrowserRouter as Router, Redirect, Switch, Route, useLocation, useHistory} from 'react-router-dom';
 
-import {AppBar, Toolbar, Button, IconButton, Typography, Container, Grid, Menu, MenuItem} from '@material-ui/core/';
+import {AppBar, Toolbar, Button, IconButton, Typography, Container, Grid, Menu, MenuItem, useMediaQuery} from '@material-ui/core/';
 import {useSnackbar} from 'notistack';
 
 import {makeStyles, createMuiTheme, responsiveFontSizes, ThemeProvider} from '@material-ui/core/styles';
@@ -14,10 +14,17 @@ import YourProjects from './Components/HomePage/YourProjects';
 import YourDeadlines from './Components/HomePage/YourDeadlines';
 import YourMeetings from './Components/HomePage/YourMeetings';
 import Project from './Components/ProjectDashboard/Project';
+import { useTheme } from '@material-ui/styles';
 
 const useStyles = makeStyles((theme) => ({
   title: {
-    flexGrow: 1,
+    [theme.breakpoints.down('xs')]: {
+        maxWidth: 85,
+    },
+    [theme.breakpoints.up('sm')]: {
+        maxWidth: 200,
+    },
+    display: 'flex',
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -44,6 +51,9 @@ function App(props) {
     const [email, setEmail] = React.useState("");
 
     const { enqueueSnackbar } = useSnackbar();
+
+    const theme = useTheme();
+    const useSmallLogo = useMediaQuery(theme.breakpoints.down('xs'));
 
     const handleClickOpen = (event) => {
         if(!login){
@@ -97,18 +107,28 @@ function App(props) {
 
     return (
         <React.Fragment>
+            <span>{`(min-width:600px) matches: ${useSmallLogo}`}</span>;
+
             <AppBar position='fixed' color='primary'>
                 <Toolbar>
-                    <IconButton edge="start" color="inherit" className={classes.menuButton}>
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" className={classes.title}>Project Management System</Typography>
-
-                    <Button color="inherit" onClick={handleClickOpen}>{login ? name : "Login"}</Button>
-                    <Menu id="accountMenu" anchorOrigin={{vertical: 'top', horizontal: 'right'}} anchorEl={menuAnchor} keepMounted open={Boolean(menuAnchor)} onClose={handleMenuClose}>
-                        <MenuItem id="account" onClick={handleMenuClose}>My Account</MenuItem>
-                        <MenuItem id="logout" onClick={handleMenuClose}>Logout</MenuItem>
-                    </Menu>
+                    <Grid justify="space-between" container alignItems="center">
+                        <Grid item>
+                            <Grid item container>
+                                <IconButton edge="start" color="inherit" className={classes.menuButton}>
+                                    <MenuIcon/>
+                                </IconButton>
+                                <img src={(useSmallLogo ? require("./Resources/bumonochromesmall.svg") : require("./Resources/bumonochrome.svg"))} className={classes.title}/>
+                            </Grid>
+                        </Grid>
+                        <Grid item>
+                            <Button color="inherit" onClick={handleClickOpen}>{login ? name : "Login"}</Button>
+                            
+                            <Menu id="accountMenu" anchorOrigin={{vertical: 'top', horizontal: 'right'}} anchorEl={menuAnchor} keepMounted open={Boolean(menuAnchor)} onClose={handleMenuClose}>
+                                <MenuItem id="account" onClick={handleMenuClose}>My Account</MenuItem>
+                                <MenuItem id="logout" onClick={handleMenuClose}>Logout</MenuItem>
+                            </Menu>
+                        </Grid>
+                    </Grid>
 
                     <LoginDialog open={openDialog} onClose={handleClose} />
                 </Toolbar>
