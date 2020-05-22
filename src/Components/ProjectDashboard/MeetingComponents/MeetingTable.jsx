@@ -53,8 +53,9 @@ export default function MeetingTable(props) {
                     setMeetings(oldMeetings => [...oldMeetings, meetings]);
                 }
             }
-
             enqueueSnackbar(message, {variant : (error ? 'error' : 'success')});
+        } else {
+            setOpenAdd(false);
         }
     }
 
@@ -80,21 +81,21 @@ export default function MeetingTable(props) {
         }
     }
 
-    const handleDeleteClose = (message, meeting, error) => {
+    const handleDeleteClose = (message, error) => {
         if(message !== undefined) {
             if(!error) {
-                setOpenDelete(false);
-
                 var oldMeetings = meetings;
                 var index = oldMeetings.indexOf(selectedMeeting);
 
                 oldMeetings.splice(index, 1);
 
                 setMeetings(oldMeetings);
-                setSelectedMeeting(null);
             }
             enqueueSnackbar(message, {variant : (error ? 'error' : 'success')});
         }
+        
+        setOpenDelete(false);
+        setSelectedMeeting(null);
     }
 
     const sortDate = (a, b) => {
