@@ -5,11 +5,12 @@ import {useParams, Redirect} from "react-router-dom";
 
 import {Box, Typography, Grid, Tabs, Tab } from "@material-ui/core";
 import {createMuiTheme, responsiveFontSizes, ThemeProvider} from '@material-ui/core/styles';
+import { makeStyles } from "@material-ui/styles";
 
 import Overview from './Overview';
 import Meetings from './Meetings';
-import { makeStyles } from "@material-ui/styles";
-import AddMeetingDialog from "./MeetingComponents/AddMeetingDialog";
+import Deadlines from './Deadlines';
+
 
 const useStyles = makeStyles({
     title: {
@@ -90,7 +91,7 @@ export default function Project(props) {
                 <Grid item md={12} xs={12}>
                     <TabPanel value={tab} index={0}><Overview id={project.id}/></TabPanel>
                     <TabPanel value={tab} index={1}><Meetings id={project.id}/></TabPanel>
-                    <TabPanel value={tab} index={2}>Deadlines</TabPanel>
+                    <TabPanel value={tab} index={2}><Deadlines id={project.id}/></TabPanel>
                     <TabPanel value={tab} index={3}>Members</TabPanel>
                     <TabPanel value={tab} index={4}>Devices</TabPanel>
                     <TabPanel value={tab} index={5}>Invoices</TabPanel>
