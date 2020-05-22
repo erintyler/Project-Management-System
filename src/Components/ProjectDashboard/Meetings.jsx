@@ -10,7 +10,7 @@ import moment from 'moment';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import MeetingTable from "./MeetingComponents/MeetingTable";
 
-export default function MeetingList(props) {
+export default function Meetings(props) {
     const [meetings, setMeetings] = React.useState([]);
 
     const [loading, setLoading] = React.useState(true);
