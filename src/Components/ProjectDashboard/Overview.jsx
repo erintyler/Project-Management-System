@@ -8,13 +8,12 @@ import DeadlineList from './OverviewComponents/DeadlineList';
 import MeetingList from "./OverviewComponents/MeetingList";
 
 export default function Overview(props) {
-
     return (
         <Grid container spacing={4}>
             <Grid container item spacing={4} md={6}>
                 <Grid item sm={12} xs={12}>
                     <Typography variant="h4">Graph Panel</Typography>
-                    <BudgetChart/>
+                    <BudgetChart id={props.id}/>
                 </Grid>
                 <Grid item sm={12} xs={12}>
                     <Typography variant="h4">Members Panel</Typography>

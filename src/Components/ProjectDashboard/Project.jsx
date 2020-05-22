@@ -10,11 +10,12 @@ import { makeStyles } from "@material-ui/styles";
 import Overview from './Overview';
 import Meetings from './Meetings';
 import Deadlines from './Deadlines';
+import Invoices from './Invoices';
 
 
 const useStyles = makeStyles({
     title: {
-        marginTop: 12,
+        marginTop: 0,
     }
 });
 
@@ -94,7 +95,7 @@ export default function Project(props) {
                     <TabPanel value={tab} index={2}><Deadlines id={project.id}/></TabPanel>
                     <TabPanel value={tab} index={3}>Members</TabPanel>
                     <TabPanel value={tab} index={4}>Devices</TabPanel>
-                    <TabPanel value={tab} index={5}>Invoices</TabPanel>
+                    <TabPanel value={tab} index={5}><Invoices id={project.id}/></TabPanel>
                 </Grid>
             </Grid>
         </React.Fragment>
