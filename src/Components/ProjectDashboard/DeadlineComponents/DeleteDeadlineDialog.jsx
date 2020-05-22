@@ -19,32 +19,30 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function DeleteMeetingDialog(props) {
+export default function DeleteDeadlineDialog(props) {
     const classes = useStyles();
-    const {onClose, open, meeting} = props;
+    const {onClose, open, deadline} = props;
 
     const [id, setId] = React.useState(null);
     const [title, setTitle] = React.useState("");
 
     React.useEffect(() => {
-        if(meeting !== null && meeting !== undefined) {
-            setId(meeting.id);
-            setTitle(meeting.title);
+        if(deadline !== null && deadline !== undefined) {
+            setId(deadline.id);
+            setTitle(deadline.title);
 
-            console.log(meeting);
+            console.log(deadline);
         }
-    }, [meeting]);
+    }, [deadline]);
 
     const handleClose = () => {
         onClose();
     };
 
     const handleSubmit = () => {
-        const response = deleteMeeting(meeting);
+        const response = deleteDeadline(deadline);
 
         const setMessage = (response) => {
-            console.log(response);
-            
             onClose(`${response.description} ${title}`, response.error);
         }
 
@@ -57,21 +55,19 @@ export default function DeleteMeetingDialog(props) {
         }
     }
 
-    const deleteMeeting = (meeting) => {
-        if(!meeting.id) {
+    const deleteDeadline = (deadline) => {
+        if(!deadline.id) {
             return {
                 error: true,
                 description: "Invalid ID Provided"
             } 
         } else {
-            return axios.get(`http://192.168.1.125:6969/removeMeeting?id=${id}`).then(res => {
+            return axios.get(`http://192.168.1.125:6969/removeDeadline?id=${id}`).then(res => {
                 return {
                     error: res.data.error,
                     description: res.data.message
                 }
             }).catch(err => {
-                console.log(err.response);
-
                 return {
                     error: true,
                     description: `${err.response.status} ${err.response.statusText} : ${err.response.data.message}`
@@ -83,7 +79,7 @@ export default function DeleteMeetingDialog(props) {
     return(
         <div>
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle id="loginTitle">Delete Meeting</DialogTitle>
+                <DialogTitle id="loginTitle">Delete Deadline</DialogTitle>
                 <DialogContent>
                     <div className={classes.root}>
                         <DialogContentText>
