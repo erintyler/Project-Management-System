@@ -12,14 +12,28 @@ const useStyles = makeStyles({
 });
 
 export default function BudgetChart(props) {
+    const [invoices, setInvoices] = React.useState([["Title", "Cost"]]);
+
     const classes = useStyles();
     const theme = useTheme();
+
+    React.useEffect(() => {
+        axios.get(`http://192.168.1.125:6969/getInvoicesForProject?projectId=${props.id}`).then(res => {
+            console.log(res);
+            res.data.forEach(invoice => {
+                 setInvoices(oldInvoices => [...oldInvoices, [invoice.name, invoice.cost]]);
+            });
+        });
+    }, [props.id]);
+
+
+    console.log(invoices);
 
     return(
         <Paper className={classes.chart}>
             <Chart
-                chartType="BarChart"
-                data={[["Age", "Weight"], [4, 5.5], [8, 12]]}
+                chartType="ColumnChart"
+                data={invoices}
                 loader={<ChartLoader/>}
                 options={{
                     legend: "none",
