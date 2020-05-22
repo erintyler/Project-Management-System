@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 
-import {Box, CircularProgress, Paper, makeStyles} from '@material-ui/core';
+import {Box, CircularProgress, Paper, makeStyles, useTheme} from '@material-ui/core';
 
 import {Chart} from 'react-google-charts';
 
@@ -13,6 +13,7 @@ const useStyles = makeStyles({
 
 export default function BudgetChart(props) {
     const classes = useStyles();
+    const theme = useTheme();
 
     return(
         <Paper className={classes.chart}>
@@ -22,6 +23,7 @@ export default function BudgetChart(props) {
                 loader={<ChartLoader/>}
                 options={{
                     legend: "none",
+                    colors: [theme.palette.primary.main],
                     backgroundColor: "#424242",
                     hAxis: {
                         textStyle:{color: "#fff"}
