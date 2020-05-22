@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import axios from 'axios';
+
 import {BrowserRouter as Router, Redirect, Switch, Route, useLocation, useHistory} from 'react-router-dom';
 
 import {AppBar, Toolbar, Button, IconButton, Typography, Container, Grid, Menu, MenuItem, useMediaQuery} from '@material-ui/core/';
@@ -55,6 +57,17 @@ function App(props) {
     const theme = useTheme();
     const useSmallLogo = useMediaQuery(theme.breakpoints.down('xs'));
 
+    const classes = useStyles();
+
+    axios.interceptors.response.use((res) => {
+        return Promise.resolve(res);
+    }, (err) => {
+        if(!err.response) {
+            enqueueSnackbar(`Could not connect to API`, {variant: 'error'});
+        }
+        return Promise.reject(err);
+    })
+
     const handleClickOpen = (event) => {
         if(!login){
             setOpenDialog(true);
@@ -92,8 +105,6 @@ function App(props) {
             enqueueSnackbar('Logged Out', {variant: 'success'});
         }
     }
-
-    const classes = useStyles();
 
     useEffect(() => {
         if(localStorage.getItem('email') && localStorage.getItem('name')) {
